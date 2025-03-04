@@ -8,7 +8,7 @@ public class GameBehaviour : MonoBehaviour
     public static GameBehaviour Instance;
     
     public TextMeshProUGUI _pauseMessage;
-    public TextMeshProUGUI _homeScreenMessage;
+    //public TextMeshProUGUI _homeScreenMessage;
     
     void Awake()
     {
@@ -26,8 +26,11 @@ public class GameBehaviour : MonoBehaviour
     void Start()
     {
         State = Utilities.GamePlayState.Pause;
-        _pauseMessage.enabled = false;
-        _homeScreenMessage.enabled = true;
+        if (_pauseMessage == null)
+        {
+            _pauseMessage.enabled = false;
+        }
+        //_homeScreenMessage.enabled = true;
     }
 
     void Update()
@@ -37,19 +40,10 @@ public class GameBehaviour : MonoBehaviour
             State = State == Utilities.GamePlayState.Play
                 ? Utilities.GamePlayState.Pause
                 : Utilities.GamePlayState.Play;
-            
-            if (_pauseMessage != null)  // Prevents NullReferenceException
+            if (_pauseMessage != null)
             {
-                _pauseMessage.enabled = !_pauseMessage.enabled;
+                _pauseMessage.enabled = State == Utilities.GamePlayState.Pause;
             }
-        }
-        
-        if (State == Utilities.GamePlayState.Pause && Input.GetKeyDown(KeyCode.Return))
-        { 
-            State = Utilities.GamePlayState.Play;
-            _homeScreenMessage.enabled = false;
-            
-            SceneManager.LoadScene("SnakeGame");
         }
     }
 }

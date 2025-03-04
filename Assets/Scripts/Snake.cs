@@ -24,36 +24,45 @@ public class Snake : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.UpArrow) && _direction != Vector2.down)
-            _direction = Vector2.up;
-        else if (Input.GetKeyDown(KeyCode.DownArrow) && _direction != Vector2.up)
-            _direction = Vector2.down;
-        else if (Input.GetKeyDown(KeyCode.LeftArrow) && _direction != Vector2.right)
-            _direction = Vector2.left;
-        else if (Input.GetKeyDown(KeyCode.RightArrow) && _direction != Vector2.left)
-            _direction = Vector2.right;
+        // Only accept input for movement if the game is not paused
+        if (GameBehaviour.Instance.State == Utilities.GamePlayState.Play)
+        {
+            if (Input.GetKeyDown(KeyCode.UpArrow) && _direction != Vector2.down)
+                _direction = Vector2.up;
+            else if (Input.GetKeyDown(KeyCode.DownArrow) && _direction != Vector2.up)
+                _direction = Vector2.down;
+            else if (Input.GetKeyDown(KeyCode.LeftArrow) && _direction != Vector2.right)
+                _direction = Vector2.left;
+            else if (Input.GetKeyDown(KeyCode.RightArrow) && _direction != Vector2.left)
+                _direction = Vector2.right;
+        }
     }
 
     private void FixedUpdate()
     {
-        moveTimer += Time.fixedDeltaTime;
-        if (moveTimer >= moveDelay)
+        // Only move if the game is not paused
+        if (GameBehaviour.Instance.State == Utilities.GamePlayState.Play)
         {
-            moveTimer = 0f;
-
-            for (int i = _segments.Count - 1; i > 0; i--)
+            moveTimer += Time.fixedDeltaTime;
+            if (moveTimer >= moveDelay)
             {
-                _segments[i].position = _segments[i - 1].position;
+                moveTimer = 0f;
+
+                // Move the snake body
+                for (int i = _segments.Count - 1; i > 0; i--)
+                {
+                    _segments[i].position = _segments[i - 1].position;
+                }
+
+                transform.position = new Vector3(
+                    Mathf.Round(transform.position.x + _direction.x),
+                    Mathf.Round(transform.position.y + _direction.y),
+                    0.0f
+                );
+
+                // Check if the snake has hit the wall
+                CheckWallCollision();
             }
-
-            transform.position = new Vector3(
-                Mathf.Round(transform.position.x + _direction.x),
-                Mathf.Round(transform.position.y + _direction.y),
-                0.0f
-            );
-
-            // Check if the snake has hit the wall
-            CheckWallCollision();
         }
     }
 
