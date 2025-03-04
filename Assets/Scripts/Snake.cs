@@ -9,53 +9,51 @@ public class Snake : MonoBehaviour
 
     public Transform segmentPrefab;
     public int initialSize = 4;
-    public float _speed = 5f; // Speed should be float for better control
+    public float _speed = 5f;
 
-    private float moveTimer = 0f; // Timer to control movement
-    private float moveDelay; // Delay between movements
+    private float moveTimer = 0f;
+    private float moveDelay;
+
+    public BoxCollider2D gridArea;  // Add a reference to the grid area for wall collisions
 
     private void Start()
     {
-        moveDelay = 1f / _speed; // Determines how often the snake moves
+        moveDelay = 1f / _speed;
         ResetState();
     }
 
     private void Update()
     {
-        if (GameBehaviour.Instance.State == Utilities.GamePlayState.Play) 
-        {
-            if (Input.GetKeyDown(KeyCode.UpArrow) && _direction != Vector2.down)
-                _direction = Vector2.up;
-            else if (Input.GetKeyDown(KeyCode.DownArrow) && _direction != Vector2.up)
-                _direction = Vector2.down;
-            else if (Input.GetKeyDown(KeyCode.LeftArrow) && _direction != Vector2.right)
-                _direction = Vector2.left;
-            else if (Input.GetKeyDown(KeyCode.RightArrow) && _direction != Vector2.left)
-                _direction = Vector2.right;
-        }
+        if (Input.GetKeyDown(KeyCode.UpArrow) && _direction != Vector2.down)
+            _direction = Vector2.up;
+        else if (Input.GetKeyDown(KeyCode.DownArrow) && _direction != Vector2.up)
+            _direction = Vector2.down;
+        else if (Input.GetKeyDown(KeyCode.LeftArrow) && _direction != Vector2.right)
+            _direction = Vector2.left;
+        else if (Input.GetKeyDown(KeyCode.RightArrow) && _direction != Vector2.left)
+            _direction = Vector2.right;
     }
-
 
     private void FixedUpdate()
     {
-        if (GameBehaviour.Instance.State == Utilities.GamePlayState.Play) 
+        moveTimer += Time.fixedDeltaTime;
+        if (moveTimer >= moveDelay)
         {
-             moveTimer += Time.fixedDeltaTime;
-            if (moveTimer >= moveDelay) // Move the snake at a fixed interval based on speed
+            moveTimer = 0f;
+
+            for (int i = _segments.Count - 1; i > 0; i--)
             {
-                 moveTimer = 0f; // Reset timer
+                _segments[i].position = _segments[i - 1].position;
+            }
 
-                for (int i = _segments.Count - 1; i > 0; i--)
-                {
-                    _segments[i].position = _segments[i - 1].position;
-                 }
+            transform.position = new Vector3(
+                Mathf.Round(transform.position.x + _direction.x),
+                Mathf.Round(transform.position.y + _direction.y),
+                0.0f
+            );
 
-                this.transform.position = new Vector3(
-                     Mathf.Round(transform.position.x + _direction.x),
-                    Mathf.Round(transform.position.y + _direction.y),
-                    0.0f
-                );
-            }   
+            // Check if the snake has hit the wall
+            CheckWallCollision();
         }
     }
 
@@ -63,7 +61,6 @@ public class Snake : MonoBehaviour
     {
         Transform segment = Instantiate(segmentPrefab);
         segment.position = _segments[_segments.Count - 1].position;
-
         _segments.Add(segment);
     }
 
@@ -83,8 +80,8 @@ public class Snake : MonoBehaviour
             _segments.Add(segment);
         }
 
-        this.transform.position = Vector3.zero;
-        _direction = Vector2.right; // Reset direction to right
+        transform.position = Vector3.zero;
+        _direction = Vector2.right;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -94,6 +91,15 @@ public class Snake : MonoBehaviour
             Grow();
         }
         else if (other.CompareTag("Obstacle"))
+        {
+            ResetState();
+        }
+    }
+
+    private void CheckWallCollision()
+    {
+        // Check if the snake has collided with the wall
+        if (!gridArea.bounds.Contains(transform.position))
         {
             ResetState();
         }

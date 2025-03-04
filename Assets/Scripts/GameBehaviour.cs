@@ -38,7 +38,10 @@ public class GameBehaviour : MonoBehaviour
                 ? Utilities.GamePlayState.Pause
                 : Utilities.GamePlayState.Play;
             
-            _pauseMessage.enabled = !_pauseMessage.enabled;
+            if (_pauseMessage != null)  // Prevents NullReferenceException
+            {
+                _pauseMessage.enabled = !_pauseMessage.enabled;
+            }
         }
         
         if (State == Utilities.GamePlayState.Pause && Input.GetKeyDown(KeyCode.Return))
