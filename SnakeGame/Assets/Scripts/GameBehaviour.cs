@@ -25,11 +25,8 @@ public class GameBehaviour : MonoBehaviour
     
     void Start()
     {
-        State = Utilities.GamePlayState.Pause;
-        if (_pauseMessage == null)
-        {
+        State = Utilities.GamePlayState.Play;
             _pauseMessage.enabled = false;
-        }
         //_homeScreenMessage.enabled = true;
     }
 
