@@ -91,6 +91,8 @@ public class Snake : MonoBehaviour
 
         transform.position = Vector3.zero;
         _direction = Vector2.right;
+
+        ScoreManager.instance.ResetScore();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -98,6 +100,7 @@ public class Snake : MonoBehaviour
         if (other.CompareTag("Food"))
         {
             Grow();
+            ScoreManager.instance.AddPoint();
         }
         else if (other.CompareTag("Obstacle"))
         {
