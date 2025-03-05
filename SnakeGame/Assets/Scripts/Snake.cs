@@ -15,11 +15,23 @@ public class Snake : MonoBehaviour
     private float moveDelay;
 
     public BoxCollider2D gridArea;  // Add a reference to the grid area for wall collisions
+    
+    //new
+    [SerializeField] private AudioClip _collisionSound;
+    [SerializeField] private AudioClip _foodSound;
+    private AudioSource audioSource;
 
     private void Start()
     {
         moveDelay = 1f / _speed;
         ResetState();
+        
+        //new
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
     }
 
     private void Update()
@@ -101,6 +113,10 @@ public class Snake : MonoBehaviour
         {
             Grow();
             ScoreManager.instance.AddPoint();
+            
+            //eat sound
+            if (_foodSound != null && audioSource != null)
+                audioSource.PlayOneShot(_foodSound);
         }
         else if (other.CompareTag("Obstacle"))
         {
@@ -112,8 +128,18 @@ public class Snake : MonoBehaviour
     {
         // Check if the snake has collided with the wall
         if (!gridArea.bounds.Contains(transform.position))
-        {
+        {  
+            //play collision is new
+            PlayCollisionSound();
+            
             ResetState();
         }
+    }
+    
+    //new
+    private void PlayCollisionSound()
+    {
+        if (_collisionSound != null && audioSource != null)
+            audioSource.PlayOneShot(_collisionSound);
     }
 }
