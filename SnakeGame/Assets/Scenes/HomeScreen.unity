@@ -152,6 +152,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _homeScreenMessage: {fileID: 1418507438}
+  flickerSpeed: 0.4
 --- !u!114 &118925589
 MonoBehaviour:
   m_ObjectHideFlags: 0
