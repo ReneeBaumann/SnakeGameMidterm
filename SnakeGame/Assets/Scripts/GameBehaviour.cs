@@ -25,7 +25,7 @@ public class GameBehaviour : MonoBehaviour
     void Start()
     {
         State = Utilities.GamePlayState.Play;
-            _pauseMessage.enabled = false;
+        _pauseMessage.enabled = false;
     }
 
     void Update()

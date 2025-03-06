@@ -14,8 +14,9 @@ public class Snake : MonoBehaviour
     private float moveTimer = 0f;
     private float moveDelay;
 
-    public BoxCollider2D gridArea; 
+    public BoxCollider2D gridArea;  // Add a reference to the grid area for wall collisions
     
+    //new
     [SerializeField] private AudioClip _collisionSound;
     [SerializeField] private AudioClip _foodSound;
     private AudioSource audioSource;
@@ -25,6 +26,7 @@ public class Snake : MonoBehaviour
         moveDelay = 1f / _speed;
         ResetState();
         
+        //new
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
         {
@@ -134,6 +136,7 @@ public class Snake : MonoBehaviour
         }
     }
     
+    //new
     private void PlayCollisionSound()
     {
         if (_collisionSound != null && audioSource != null)
