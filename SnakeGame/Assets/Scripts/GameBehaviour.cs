@@ -8,7 +8,6 @@ public class GameBehaviour : MonoBehaviour
     public static GameBehaviour Instance;
     
     public TextMeshProUGUI _pauseMessage;
-    //public TextMeshProUGUI _homeScreenMessage;
     
     void Awake()
     {
@@ -27,7 +26,6 @@ public class GameBehaviour : MonoBehaviour
     {
         State = Utilities.GamePlayState.Play;
             _pauseMessage.enabled = false;
-        //_homeScreenMessage.enabled = true;
     }
 
     void Update()
