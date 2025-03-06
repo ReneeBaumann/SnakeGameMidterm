@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class Snake : MonoBehaviour
 {
@@ -15,28 +16,34 @@ public class Snake : MonoBehaviour
     private float moveDelay;
 
     public BoxCollider2D gridArea;  // Add a reference to the grid area for wall collisions
-    
-    //new
+
     [SerializeField] private AudioClip _collisionSound;
     [SerializeField] private AudioClip _foodSound;
     private AudioSource audioSource;
+
+    private bool gameStarted = false;
 
     private void Start()
     {
         moveDelay = 1f / _speed;
         ResetState();
-        
-        //new
+
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
         {
             audioSource = gameObject.AddComponent<AudioSource>();
         }
+
+        Invoke(nameof(StartGame), 0.5f);
+    }
+
+    private void StartGame()
+    {
+        gameStarted = true;
     }
 
     private void Update()
     {
-        // Only accept input for movement if the game is not paused
         if (GameBehaviour.Instance.State == Utilities.GamePlayState.Play)
         {
             if (Input.GetKeyDown(KeyCode.UpArrow) && _direction != Vector2.down)
@@ -52,7 +59,6 @@ public class Snake : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // Only move if the game is not paused
         if (GameBehaviour.Instance.State == Utilities.GamePlayState.Play)
         {
             moveTimer += Time.fixedDeltaTime;
@@ -72,7 +78,6 @@ public class Snake : MonoBehaviour
                     0.0f
                 );
 
-                // Check if the snake has hit the wall
                 CheckWallCollision();
             }
         }
@@ -101,6 +106,7 @@ public class Snake : MonoBehaviour
             _segments.Add(segment);
         }
 
+        // ✅ FIXED: Ensure the snake starts in a safe position
         transform.position = Vector3.zero;
         _direction = Vector2.right;
 
@@ -109,37 +115,41 @@ public class Snake : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        if (!gameStarted) return;
+
         if (other.CompareTag("Food"))
         {
             Grow();
             ScoreManager.instance.AddPoint();
-            
-            //eat sound
+
             if (_foodSound != null && audioSource != null)
                 audioSource.PlayOneShot(_foodSound);
         }
         else if (other.CompareTag("Obstacle"))
         {
-            ResetState();
+            GameOver();
         }
     }
 
     private void CheckWallCollision()
     {
-        // Check if the snake has collided with the wall
+        if (!gameStarted) return;
+
         if (!gridArea.bounds.Contains(transform.position))
         {  
-            //play collision is new
             PlayCollisionSound();
-            
-            ResetState();
+            GameOver();
         }
     }
-    
-    //new
+
     private void PlayCollisionSound()
     {
         if (_collisionSound != null && audioSource != null)
             audioSource.PlayOneShot(_collisionSound);
+    }
+
+    private void GameOver()
+    {
+        SceneManager.LoadScene("GameOver");
     }
 }
