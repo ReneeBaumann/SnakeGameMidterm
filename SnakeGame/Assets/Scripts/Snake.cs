@@ -1,7 +1,7 @@
-using System;
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class Snake : MonoBehaviour
 {
@@ -10,12 +10,14 @@ public class Snake : MonoBehaviour
 
     public Transform segmentPrefab;
     public int initialSize = 4;
-    public float _speed = 5f;
+
+    public float normalSpeed = 5f;  // Normal speed
+    private float currentSpeed;
 
     private float moveTimer = 0f;
     private float moveDelay;
 
-    public BoxCollider2D gridArea;  // Add a reference to the grid area for wall collisions
+    public BoxCollider2D gridArea;
 
     [SerializeField] private AudioClip _collisionSound;
     [SerializeField] private AudioClip _foodSound;
@@ -25,14 +27,11 @@ public class Snake : MonoBehaviour
 
     private void Start()
     {
-        moveDelay = 1f / _speed;
+        currentSpeed = normalSpeed;
+        moveDelay = 1f / currentSpeed;
         ResetState();
 
-        audioSource = GetComponent<AudioSource>();
-        if (audioSource == null)
-        {
-            audioSource = gameObject.AddComponent<AudioSource>();
-        }
+        audioSource = GetComponent<AudioSource>() ?? gameObject.AddComponent<AudioSource>();
 
         Invoke(nameof(StartGame), 0.5f);
     }
@@ -44,43 +43,43 @@ public class Snake : MonoBehaviour
 
     private void Update()
     {
-        if (GameBehaviour.Instance.State == Utilities.GamePlayState.Play)
+        if (GameBehaviour.Instance.State != Utilities.GamePlayState.Play) return;
+
+        HandleInput();
+
+        moveTimer += Time.deltaTime;
+        if (moveTimer >= moveDelay)
         {
-            if (Input.GetKeyDown(KeyCode.UpArrow) && _direction != Vector2.down)
-                _direction = Vector2.up;
-            else if (Input.GetKeyDown(KeyCode.DownArrow) && _direction != Vector2.up)
-                _direction = Vector2.down;
-            else if (Input.GetKeyDown(KeyCode.LeftArrow) && _direction != Vector2.right)
-                _direction = Vector2.left;
-            else if (Input.GetKeyDown(KeyCode.RightArrow) && _direction != Vector2.left)
-                _direction = Vector2.right;
+            moveTimer = 0f;
+            MoveSnake();
+            CheckWallCollision();
         }
     }
 
-    private void FixedUpdate()
+    private void HandleInput()
     {
-        if (GameBehaviour.Instance.State == Utilities.GamePlayState.Play)
+        if (Input.GetKeyDown(KeyCode.UpArrow) && _direction != Vector2.down)
+            _direction = Vector2.up;
+        else if (Input.GetKeyDown(KeyCode.DownArrow) && _direction != Vector2.up)
+            _direction = Vector2.down;
+        else if (Input.GetKeyDown(KeyCode.LeftArrow) && _direction != Vector2.right)
+            _direction = Vector2.left;
+        else if (Input.GetKeyDown(KeyCode.RightArrow) && _direction != Vector2.left)
+            _direction = Vector2.right;
+    }
+
+    private void MoveSnake()
+    {
+        for (int i = _segments.Count - 1; i > 0; i--)
         {
-            moveTimer += Time.fixedDeltaTime;
-            if (moveTimer >= moveDelay)
-            {
-                moveTimer = 0f;
-
-                // Move the snake body
-                for (int i = _segments.Count - 1; i > 0; i--)
-                {
-                    _segments[i].position = _segments[i - 1].position;
-                }
-
-                transform.position = new Vector3(
-                    Mathf.Round(transform.position.x + _direction.x),
-                    Mathf.Round(transform.position.y + _direction.y),
-                    0.0f
-                );
-
-                CheckWallCollision();
-            }
+            _segments[i].position = _segments[i - 1].position;
         }
+
+        transform.position = new Vector3(
+            Mathf.Round(transform.position.x + _direction.x),
+            Mathf.Round(transform.position.y + _direction.y),
+            0.0f
+        );
     }
 
     private void Grow()
@@ -106,7 +105,6 @@ public class Snake : MonoBehaviour
             _segments.Add(segment);
         }
 
-        // ✅ FIXED: Ensure the snake starts in a safe position
         transform.position = Vector3.zero;
         _direction = Vector2.right;
 
@@ -121,9 +119,7 @@ public class Snake : MonoBehaviour
         {
             Grow();
             ScoreManager.instance.AddPoint();
-
-            if (_foodSound != null && audioSource != null)
-                audioSource.PlayOneShot(_foodSound);
+            audioSource?.PlayOneShot(_foodSound);
         }
         else if (other.CompareTag("Obstacle"))
         {
@@ -144,12 +140,31 @@ public class Snake : MonoBehaviour
 
     private void PlayCollisionSound()
     {
-        if (_collisionSound != null && audioSource != null)
-            audioSource.PlayOneShot(_collisionSound);
+        audioSource?.PlayOneShot(_collisionSound);
     }
 
     private void GameOver()
     {
         SceneManager.LoadScene("GameOver");
+    }
+
+    // Method to apply speed boost
+    public void ApplySpeedBoost(float boostMultiplier, float duration)
+    {
+        StopAllCoroutines();  // Stop any ongoing boost effect
+
+        // Temporarily change the current speed
+        currentSpeed = normalSpeed * boostMultiplier;
+        moveDelay = 1f / currentSpeed;  // Update the move delay
+
+        // After the duration, reset the speed back to normal
+        StartCoroutine(ResetSpeedAfterDelay(duration));
+    }
+
+    private IEnumerator ResetSpeedAfterDelay(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        currentSpeed = normalSpeed;
+        moveDelay = 1f / currentSpeed;  // Update the move delay back to normal speed
     }
 }
