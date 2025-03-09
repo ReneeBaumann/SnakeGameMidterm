@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class ScoreManager : MonoBehaviour
 {
@@ -37,7 +38,6 @@ public class ScoreManager : MonoBehaviour
             highScoreText.text = "High Score: " + _highScore.ToString();
             
         }
-        
         _score = 0;
         scoreText.text = " Score: " + _score.ToString();
     }

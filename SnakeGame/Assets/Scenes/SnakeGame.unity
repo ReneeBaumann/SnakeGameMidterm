@@ -1997,7 +1997,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   segmentPrefab: {fileID: 1605751255}
   initialSize: 3
-  _speed: 25
+  _speed: 20
   gridArea: {fileID: 1330228524}
   _collisionSound: {fileID: 8300000, guid: 6317d4a14dc4543fbad63dd6a4e211b6, type: 3}
   _foodSound: {fileID: 8300000, guid: bc3364bfca94e45098ae1f5a8071cc3f, type: 3}
