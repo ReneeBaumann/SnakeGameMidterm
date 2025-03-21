@@ -1699,7 +1699,7 @@ GameObject:
   - component: {fileID: 1330228524}
   m_Layer: 0
   m_Name: gridArea
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1760,6 +1760,51 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1353186309
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1353186311}
+  - component: {fileID: 1353186310}
+  m_Layer: 0
+  m_Name: AudioForGame
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1353186310
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1353186309}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49d8134f117344d4893168d5ea907fea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _themesong: {fileID: 8300000, guid: 1103cd16719334ad094040cb4f7129f6, type: 3}
+--- !u!4 &1353186311
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1353186309}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.1184013, y: 3.4156625, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2144,12 +2189,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   segmentPrefab: {fileID: 1605751255}
   initialSize: 3
-  _speed: 15
+  _speed: 17
   gridArea: {fileID: 1330228524}
   _collisionSound: {fileID: 8300000, guid: 6317d4a14dc4543fbad63dd6a4e211b6, type: 3}
   _foodSound: {fileID: 8300000, guid: bc3364bfca94e45098ae1f5a8071cc3f, type: 3}
   specialFood: {fileID: 447236551}
-  spawnInterval: 15
+  spawnInterval: 35
 --- !u!212 &1989255050
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2408,3 +2453,4 @@ SceneRoots:
   - {fileID: 999199968}
   - {fileID: 646890383}
   - {fileID: 168165406}
+  - {fileID: 1353186311}

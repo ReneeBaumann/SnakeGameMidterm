@@ -27,7 +27,7 @@ public class Snake : MonoBehaviour
 
     // Special food variables
     public GameObject specialFood; // Reference to the special food GameObject
-    public float spawnInterval = 15f;
+    public float spawnInterval = 15f;  // seconds before special food is spawned 
     private float spawnTimer = 0f;
 
     private void Start()
@@ -149,6 +149,7 @@ public class Snake : MonoBehaviour
         }
         else if (other.CompareTag("Obstacle"))
         {
+            PlayCollisionSound();
             GameOver();
         }
     }
@@ -159,15 +160,17 @@ public class Snake : MonoBehaviour
 
         if (!gridArea.bounds.Contains(transform.position))
         {
-            PlayCollisionSound();
+            PlayCollisionSound();            
             GameOver();
         }
     }
 
     private void PlayCollisionSound()
     {
-        audioSource?.PlayOneShot(_collisionSound);
+        audioSource.clip = _collisionSound; 
+        audioSource.Play();
     }
+
 
     private void GameOver()
     {
